@@ -2,6 +2,8 @@ import express from "express";
 import { json } from "body-parser";
 import "express-async-errors";
 
+import mongoose from "mongoose";
+
 // routes
 import { currentUserRoute } from "../src/routes/currentUser";
 import { signInRoute } from "./routes/signIn";
@@ -22,11 +24,24 @@ app.use(signUpRoute);
 app.use(signInRoute);
 app.use(currentUserRoute);
 app.use(signOutRoutes);
-app.all("*", async() => {
+app.all("*", async () => {
   throw new NotFoundError();
 });
 app.use(errorHandler);
 
+// mongodb connection
+
+const startMongodb = async () => {
+  try {
+    await mongoose.connect("mongodb://auth-mongo-srv:27017/auth");
+    console.log('Mongodb connected')
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 app.listen(3000, () => {
   console.log(`port is Listen at 3000!!!!!!!`);
 });
+
+startMongodb()
