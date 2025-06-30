@@ -1,7 +1,9 @@
 import express, { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import { RequestValidationError } from "../errors/request-validation-error";
-import { DatabaseConnectionError } from "../errors/database-connection-error";
+import { User } from "../models/user.model";
+import jwt from "jsonwebtoken";
+import { BadRequestError } from "../errors/bad-request-error";
 
 const router = express.Router();
 
@@ -12,19 +14,35 @@ router.post(
     .trim()
     .isLength({ min: 4, max: 20 })
     .withMessage("password must be valid"),
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       throw new RequestValidationError(errors.array());
-      //   res.status(400).send(errors.array())
     }
-    console.log("userSign UP");
+    const { email, password } = req.body;
+    const isUserExist = await User.findOne({ email });
 
+    if (isUserExist) {
+      throw new BadRequestError("Email is already in Use");
+    }
+
+    const user = User.build({ email, password });
     // database error check
-    throw new DatabaseConnectionError();
+    await user.save()
 
-    res.status(201).send({});
+    const userJwt = jwt.sign({
+      id: user.id,
+      email: user.email
+    },
+    "importantKey"
+  )
+
+  req.session = {
+   jwt: userJwt 
+  
+  }
+    res.status(201).send({user});
   }
 );
 
