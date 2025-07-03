@@ -4,19 +4,10 @@ import { param, validationResult } from "express-validator";
 
 const router = express.Router();
 
-router.post("/api/user/signOUt", 
-    param("_id").isMongoId().withMessage("userId must be valid"),
+router.post("/api/user/signOut", 
     (req:Request, res: Response) => {
-        const errors = validationResult(req);
-    
-        if(!errors.isEmpty()){
-            res.status(400).send(errors.array())
-        }
-        console.log('userSign Out')
-    
-        res.status(201).send({})
-    
-    
+        req.session = null;
+        res.send({})
       }
 
 
