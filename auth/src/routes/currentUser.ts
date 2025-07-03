@@ -1,22 +1,14 @@
-import express, {Request,  Response} from "express";
-import { param, validationResult } from "express-validator";
+import express, { Request, Response } from "express";
+import { currentUser } from "../middlewares/current-user";
+import { requireAuth } from "../middlewares/require-auth";
 
 const router = express.Router();
 
 router.get(
   "/api/user/currentUser",
-  param("_id").isMongoId().withMessage("userId must be valid"),    
-      (req:Request, res: Response) => {
-        const errors = validationResult(req);
-    
-        if(!errors.isEmpty()){
-            res.status(400).send(errors.array())
-        }
-        console.log('currentUser')
-    
-        res.status(200).send({})
-    
-    
+  currentUser,requireAuth,
+  (req: Request, res: Response) => {
+    res.send({ currentUser: req.currentUser || null });
   }
 );
 
