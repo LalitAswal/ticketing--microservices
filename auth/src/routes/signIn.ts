@@ -16,6 +16,10 @@ router.post(
 
   async(req:Request, res: Response) => {
     const errors = validationResult(req);
+    
+        if(!errors.isEmpty()){
+            res.status(400).send(errors.array())
+        }
 
     const {email, password} = req.body;
 
@@ -34,7 +38,7 @@ router.post(
           id: emailExist.id,
           email: emailExist.email
         },
-        "importantKey"
+        process.env.JWT_KEY || "PracticeKaroYaro"
       )
     
       req.session = {

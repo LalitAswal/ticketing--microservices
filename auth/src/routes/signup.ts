@@ -22,7 +22,7 @@ router.post(
     }
     const { email, password } = req.body;
     const isUserExist = await User.findOne({ email });
-
+    console.log('isUserExist',isUserExist)
     if (isUserExist) {
       throw new BadRequestError("Email is already in Use");
     }
@@ -35,7 +35,7 @@ router.post(
       id: user.id,
       email: user.email
     },
-    "importantKey"
+    process.env.JWT_KEY || "PracticeKaroYaro"
   )
 
   req.session = {
