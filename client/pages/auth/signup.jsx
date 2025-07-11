@@ -40,7 +40,6 @@ export default () => {
           className="form-control"
         />
       </div>
-      {console.log('errors',errors)}
       {errors}
       <button className="btn btn-primary">Sign Up</button>
     </form>
